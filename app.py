@@ -1,4 +1,4 @@
-from spyne import Application, rpc, ServiceBase, Integer, Unicode
+from spyne import Application, rpc, ServiceBase, Integer, Unicode, Iterable
 from spyne.protocol.soap import Soap11
 from spyne.server.wsgi import WsgiApplication
 
@@ -6,6 +6,7 @@ from models import Dispositivo, Session
 
 class DispositivoService(ServiceBase):
 
+    # Crear dispositivo
     @rpc(Unicode, Unicode, Unicode, Integer, _returns=Integer)
     def crear(ctx, tipo_dispositivo, marca, num_serie, user_id):
         session = Session()
@@ -14,7 +15,7 @@ class DispositivoService(ServiceBase):
         session.commit()
         return nueva.id_dispositivo
 
-
+    # Leer dispositivo
     @rpc(Integer, _returns=Unicode)
     def leer(ctx, dispositivo_id):
         session = Session()
@@ -22,8 +23,16 @@ class DispositivoService(ServiceBase):
         if not dispositivo:
             return "No encontrado"
         return f"{dispositivo.id_dispositivo}: {dispositivo.tipo_dispositivo}, {dispositivo.marca}, {dispositivo.num_serie}, User ID: {dispositivo.user_id}"
+    
+    @rpc(_returns=Iterable(Unicode))
+    def listar_todos(ctx):
+        session = Session()
+        dispositivos = session.query(Dispositivo).all()
 
+        for d in dispositivos:
+            yield f"{d.id_dispositivo}: {d.tipo_dispositivo}, {d.marca}, {d.num_serie}, User ID: {d.user_id}"
 
+    # Actualizar dispositivo
     @rpc(Integer, Unicode, Unicode, Unicode, Integer, _returns=Unicode)
     def actualizar(ctx, dispositivo_id, tipo_dispositivo, marca, num_serie, user_id):
         session = Session()
@@ -38,7 +47,7 @@ class DispositivoService(ServiceBase):
 
         return "Actualizada"
 
-
+    # Eliminar dispositivo
     @rpc(Integer, _returns=Unicode)
     def eliminar(ctx, dispositivo_id):
         session = Session()
@@ -49,7 +58,7 @@ class DispositivoService(ServiceBase):
         session.commit()
         return "Eliminada"
 
-
+# Configuración de la aplicación SOAP
 application = Application(
     [DispositivoService],
     tns="spyne.dispositivos.app",
@@ -57,8 +66,10 @@ application = Application(
     out_protocol=Soap11()
 )
 
+# Configuración WSGI
 wsgi_app = WsgiApplication(application)
 
+# Ejecutar el servidor
 if __name__ == "__main__":
     from wsgiref.simple_server import make_server
     print("Servidor SOAP en http://localhost:8000")

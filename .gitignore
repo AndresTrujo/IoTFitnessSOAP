@@ -1,2 +1,4 @@
+/soap_env/
 /soap_env/**
+/__pycache__/
 /__pycache__/**
