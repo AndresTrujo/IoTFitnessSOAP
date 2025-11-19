@@ -24,6 +24,7 @@ class DispositivoService(ServiceBase):
             return "No encontrado"
         return f"{dispositivo.id_dispositivo}: {dispositivo.tipo_dispositivo}, {dispositivo.marca}, {dispositivo.num_serie}, User ID: {dispositivo.user_id}"
     
+    # Listar todos los dispositivos
     @rpc(_returns=Iterable(Unicode))
     def listar_todos(ctx):
         session = Session()

@@ -24,15 +24,21 @@ def eliminar_dispositivo(dispositivo_id):
     print(f"Eliminar dispositivo: {result}")
     return result
 
+def listar_todos():
+    result = client.service.listar_todos()
+    print("Lista de dispositivos:")
+    for item in result:
+        print("-", item)
+
 
 if __name__ == "__main__":
-    # Ejemplo de uso:
+   # Ejemplo de uso:
 
     print("=== Crear dispositivo ===")
     nuevo_id = crear_dispositivo(
-        tipo_dispositivo="Mi Band 6",
-        marca="Xiaomi",
-        num_serie="XIAOXD76",
+        tipo_dispositivo="AirTag",
+        marca="Apple",
+        num_serie="APL12345",
         user_id=1
     )
 
@@ -52,4 +58,4 @@ if __name__ == "__main__":
     leer_dispositivo(nuevo_id)
 
     print("\n=== Eliminar dispositivo ===")
-    eliminar_dispositivo(nuevo_id)
+    eliminar_dispositivo(6)
